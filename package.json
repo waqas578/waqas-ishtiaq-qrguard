@@ -1,0 +1,23 @@
+{
+  "name": "waqas-ishtiaq-qrguard",
+  "version": "0.1.0",
+  "description": "QRGuard — QR-code destination preview and website risk-ranking web application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "qrguard",
+    "qr-code",
+    "security",
+    "phishing",
+    "risk-ranking"
+  ],
+  "author": "Waqas Ishtiaq",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  }
+}
