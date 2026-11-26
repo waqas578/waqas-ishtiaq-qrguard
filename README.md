@@ -18,7 +18,7 @@ Student ID: 20165616 (HKUSPACE) · 10966127 (University of Plymouth)
 - Vitest for unit tests
 
 ## Current milestone
-**Sprint 1 / Session 1** — project skeleton, image upload UI, jsQR decode, and clear destination/error display (no auto-open). Camera scan and risk scoring come in later sessions.
+**Sprint 1** — project skeleton, image upload UI, jsQR decode, and clear destination/error display (no auto-open). Camera scan and website risk scoring are planned for later sprints. This milestone is image upload only.
 
 ## How to run locally
 
@@ -31,7 +31,18 @@ npm install
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`). Upload a QR code image to decode its payload.
+Open the URL Vite prints (usually `http://localhost:5173`). Upload a QR code image to decode its payload. The app shows the decoded text and does not navigate away.
+
+### Quick demo (viva)
+
+1. Run `npm run dev` and open the local URL.
+2. Drag a file from `public/demo-fixtures/` onto the drop zone (or click to browse).
+3. Expected results:
+   - `url-demo.png` → `https://example.com/qrguard-demo`
+   - `text-payload.png` → `QRGuard demo text payload`
+   - `mailto-demo.png` → `mailto:demo@example.com`
+   - `no-qr.png` → clear error (“No QR code found…”)
+4. Confirm the destination stays on-screen and the browser does not open the link.
 
 ### Other scripts
 

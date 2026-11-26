@@ -22,7 +22,7 @@ function App() {
           Student: Waqas Ishtiaq · Supervisors: Ivy Wong, Beta Yip
         </p>
         <p className="footer__note">
-          Sprint 1 · Session 1 — image upload decode (camera coming next)
+          Sprint 1 — image upload decode only (no camera or risk scoring yet)
         </p>
       </footer>
     </div>

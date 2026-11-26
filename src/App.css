@@ -86,11 +86,31 @@
   transform: translateY(-1px);
 }
 
+.dropzone--busy {
+  opacity: 0.78;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.dropzone--success {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--success) 55%, var(--border));
+}
+
+.dropzone--error {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+}
+
 .dropzone input {
   position: absolute;
   inset: 0;
   opacity: 0;
   cursor: pointer;
+}
+
+.dropzone--busy input {
+  cursor: wait;
 }
 
 .dropzone__title {
@@ -134,6 +154,12 @@
   background: var(--surface-strong);
 }
 
+.status-region {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .status {
   margin: 0;
   font-size: 0.95rem;
@@ -149,10 +175,38 @@
   border: 1px solid var(--border);
 }
 
+.result__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 .result h3 {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-size: 1rem;
   font-family: var(--font-display);
+}
+
+.result__badge {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.3rem;
+}
+
+.result__badge--success {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 16%, white);
+}
+
+.result__badge--error {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, white);
 }
 
 .result--success {
@@ -163,6 +217,11 @@
 .result--error {
   background: color-mix(in srgb, var(--danger) 10%, white);
   border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+}
+
+.result--error > p {
+  margin: 0;
+  line-height: 1.45;
 }
 
 .result__url {
@@ -178,10 +237,38 @@
   border: 1px solid var(--border);
 }
 
+.result__actions {
+  margin-top: 0.75rem;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .result__note {
   margin: 0.75rem 0 0;
   font-size: 0.88rem;
   color: var(--muted);
+  line-height: 1.45;
+}
+
+.result__note code {
+  font-family: var(--font-mono);
+  font-size: 0.84em;
 }
 
 .footer {
