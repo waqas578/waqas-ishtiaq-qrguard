@@ -1,3 +1,4 @@
+import { QrCamera } from './components/QrCamera'
 import { QrUpload } from './components/QrUpload'
 import './App.css'
 
@@ -13,8 +14,9 @@ function App() {
         </p>
       </header>
 
-      <main>
+      <main className="main-stack">
         <QrUpload />
+        <QrCamera />
       </main>
 
       <footer className="footer">
@@ -22,8 +24,8 @@ function App() {
           Student: Waqas Ishtiaq · Supervisors: Ivy Wong, Beta Yip
         </p>
         <p className="footer__note">
-          Sprint 2 — client-side risk signals (no camera; links are never
-          opened automatically)
+          Sprint 2 — upload or live camera decode, client-side risk signals
+          (links are never opened automatically)
         </p>
       </footer>
     </div>

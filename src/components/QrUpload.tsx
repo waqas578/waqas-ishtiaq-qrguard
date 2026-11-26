@@ -1,10 +1,6 @@
 import { useId, useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import { decodeQrFromFile, type DecodeResult } from '../lib/decodeQr'
-import {
-  assessPayloadRisk,
-  riskLevelLabel,
-  type RiskAssessment,
-} from '../lib/riskSignals'
+import { DecodedResultPanel } from './DecodedResultPanel'
 
 type Status = 'idle' | 'decoding' | 'success' | 'error'
 
@@ -167,8 +163,8 @@ export function QrUpload() {
         />
       </label>
       <p id="upload-formats" className="sr-only">
-        Accepted formats: PNG, JPEG, WebP, and GIF. Camera capture is not
-        available in this milestone.
+        Accepted formats: PNG, JPEG, WebP, and GIF. You can also scan with the
+        camera section below.
       </p>
 
       {fileName && (
@@ -195,7 +191,7 @@ export function QrUpload() {
         )}
 
         {result?.ok && (
-          <DecodedResult
+          <DecodedResultPanel
             payload={result.data}
             copied={copied}
             onCopy={() => void copyDestination()}
@@ -217,63 +213,5 @@ export function QrUpload() {
         )}
       </div>
     </section>
-  )
-}
-
-function DecodedResult({
-  payload,
-  copied,
-  onCopy,
-}: {
-  payload: string
-  copied: boolean
-  onCopy: () => void
-}) {
-  const risk: RiskAssessment = assessPayloadRisk(payload)
-
-  return (
-    <div className="result result--success" role="status">
-      <div className="result__header">
-        <h3>Decoded destination</h3>
-        <span className="result__badge result__badge--success">Decoded</span>
-      </div>
-      <p className="result__url">{payload}</p>
-      <div className="result__actions">
-        <button type="button" className="btn" onClick={onCopy}>
-          {copied ? 'Copied' : 'Copy text'}
-        </button>
-      </div>
-
-      <RiskPanel risk={risk} />
-
-      <p className="result__note result__note--warn">
-        Do not open this destination automatically. QRGuard only displays the
-        decoded text so you can decide whether it is safe to visit.
-      </p>
-    </div>
-  )
-}
-
-function RiskPanel({ risk }: { risk: RiskAssessment }) {
-  const reasons =
-    risk.signals.filter((s) => s.id !== 'https-ok').length > 0
-      ? risk.signals.filter((s) => s.id !== 'https-ok')
-      : risk.signals
-
-  return (
-    <div className={`risk risk--${risk.level}`} aria-label="Risk assessment">
-      <div className="risk__header">
-        <h4 className="risk__title">Risk rank</h4>
-        <span className={`risk__badge risk__badge--${risk.level}`}>
-          {riskLevelLabel(risk.level)}
-        </span>
-      </div>
-      <p className="risk__summary">{risk.summary}</p>
-      <ul className="risk__reasons">
-        {reasons.map((signal) => (
-          <li key={signal.id}>{signal.reason}</li>
-        ))}
-      </ul>
-    </div>
   )
 }

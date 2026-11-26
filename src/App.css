@@ -39,13 +39,21 @@
   color: var(--muted);
 }
 
-.upload-panel {
+.main-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.upload-panel,
+.camera-panel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.upload-panel h2 {
+.upload-panel h2,
+.camera-panel h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.35rem;
@@ -257,6 +265,63 @@
 .btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.btn--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, #000);
+  color: #fff;
+}
+
+.camera-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.camera-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background: #0d1813;
+  min-height: 12rem;
+}
+
+.camera-stage[hidden] {
+  display: none;
+}
+
+.camera-video {
+  display: block;
+  width: 100%;
+  max-height: 20rem;
+  object-fit: cover;
+}
+
+.camera-canvas {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.camera-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.35rem;
+  background: rgba(13, 24, 19, 0.72);
+  color: #f4f8f5;
+  font-size: 0.88rem;
 }
 
 .result__note {
