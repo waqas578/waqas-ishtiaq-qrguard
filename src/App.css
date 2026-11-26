@@ -266,9 +266,93 @@
   line-height: 1.45;
 }
 
+.result__note--warn {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .result__note code {
   font-family: var(--font-mono);
   font-size: 0.84em;
+}
+
+.risk {
+  margin-top: 1rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.risk__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.risk__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+
+.risk__badge {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.3rem;
+}
+
+.risk__badge--low {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 14%, white);
+}
+
+.risk__badge--medium {
+  color: var(--caution);
+  background: color-mix(in srgb, var(--caution) 16%, white);
+}
+
+.risk__badge--high {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, white);
+}
+
+.risk--low {
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+}
+
+.risk--medium {
+  border-color: color-mix(in srgb, var(--caution) 40%, var(--border));
+}
+
+.risk--high {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--border));
+}
+
+.risk__summary {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.risk__reasons {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.risk__reasons li + li {
+  margin-top: 0.25rem;
 }
 
 .footer {

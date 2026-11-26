@@ -8,8 +8,8 @@ function App() {
         <p className="eyebrow">COMP3000 · Computing Project</p>
         <h1 className="brand">QRGuard</h1>
         <p className="tagline">
-          Decode a QR code, preview the destination URL, and decide before you
-          visit.
+          Decode a QR code, preview the destination, see a simple risk rank, and
+          decide before you visit.
         </p>
       </header>
 
@@ -22,7 +22,8 @@ function App() {
           Student: Waqas Ishtiaq · Supervisors: Ivy Wong, Beta Yip
         </p>
         <p className="footer__note">
-          Sprint 1 — image upload decode only (no camera or risk scoring yet)
+          Sprint 2 — client-side risk signals (no camera; links are never
+          opened automatically)
         </p>
       </footer>
     </div>
