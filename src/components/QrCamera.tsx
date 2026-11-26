@@ -5,18 +5,26 @@ import {
   grabVideoFrame,
   startCameraStream,
   stopCameraStream,
+  waitForVideoDimensions,
 } from '../lib/camera'
 import { decodeQrFromImageData } from '../lib/decodeQr'
 import { DecodedResultPanel } from './DecodedResultPanel'
 
 type CameraStatus = 'idle' | 'starting' | 'scanning' | 'success' | 'error'
 
+type VideoWithFrameCallback = HTMLVideoElement & {
+  requestVideoFrameCallback?: (callback: () => void) => number
+  cancelVideoFrameCallback?: (handle: number) => void
+}
+
 export function QrCamera() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const rafRef = useRef<number | null>(null)
+  const rvfcRef = useRef<number | null>(null)
   const scanningRef = useRef(false)
+  const busyRef = useRef(false)
 
   const [status, setStatus] = useState<CameraStatus>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -33,40 +41,86 @@ export function QrCamera() {
     }
   }, [])
 
+  function ensureCanvas(): HTMLCanvasElement {
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement('canvas')
+    }
+    return canvasRef.current
+  }
+
   function stopScanLoop() {
     scanningRef.current = false
+    busyRef.current = false
+
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
     }
+
+    const video = videoRef.current as VideoWithFrameCallback | null
+    if (video && rvfcRef.current !== null && video.cancelVideoFrameCallback) {
+      video.cancelVideoFrameCallback(rvfcRef.current)
+      rvfcRef.current = null
+    }
   }
 
-  function tick() {
+  function scheduleNextFrame() {
     if (!scanningRef.current) return
 
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    if (video && canvas && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      const imageData = grabVideoFrame(video, canvas)
-      if (imageData) {
-        const decoded = decodeQrFromImageData(imageData)
-        if (decoded.ok) {
-          scanningRef.current = false
-          setPayload(decoded.data)
-          setStatus('success')
-          setCopied(false)
-          // Keep the last frame on screen; stop the live stream.
-          stopCameraStream(streamRef.current)
-          streamRef.current = null
-          if (videoRef.current) {
-            videoRef.current.srcObject = null
-          }
-          return
-        }
-      }
+    const video = videoRef.current as VideoWithFrameCallback | null
+    if (video?.requestVideoFrameCallback) {
+      rvfcRef.current = video.requestVideoFrameCallback(() => {
+        void runScanTick()
+      })
+      return
     }
 
-    rafRef.current = requestAnimationFrame(tick)
+    rafRef.current = requestAnimationFrame(() => {
+      void runScanTick()
+    })
+  }
+
+  async function runScanTick() {
+    if (!scanningRef.current) return
+    // A decode is already in flight; that call schedules the next frame.
+    if (busyRef.current) return
+
+    const video = videoRef.current
+    if (
+      !video ||
+      video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+      video.videoWidth <= 0
+    ) {
+      scheduleNextFrame()
+      return
+    }
+
+    busyRef.current = true
+    try {
+      const imageData = await grabVideoFrame(video, ensureCanvas())
+      if (!scanningRef.current || !imageData) {
+        return
+      }
+
+      const decoded = decodeQrFromImageData(imageData)
+      if (decoded.ok) {
+        scanningRef.current = false
+        setPayload(decoded.data)
+        setStatus('success')
+        setCopied(false)
+        stopCameraStream(streamRef.current)
+        streamRef.current = null
+        if (videoRef.current) {
+          videoRef.current.srcObject = null
+        }
+        return
+      }
+    } finally {
+      busyRef.current = false
+      if (scanningRef.current) {
+        scheduleNextFrame()
+      }
+    }
   }
 
   async function startCamera() {
@@ -92,12 +146,29 @@ export function QrCamera() {
         return
       }
 
+      // React's muted attribute is not always enough for autoplay policies.
+      video.muted = true
+      video.playsInline = true
+      video.setAttribute('playsinline', 'true')
       video.srcObject = stream
+
       await video.play()
+
+      const ready = await waitForVideoDimensions(video)
+      if (!ready) {
+        stopCameraStream(stream)
+        streamRef.current = null
+        video.srcObject = null
+        setError(
+          'Camera started but no video frames arrived. Try another browser or check that the webcam is not blocked.',
+        )
+        setStatus('error')
+        return
+      }
 
       scanningRef.current = true
       setStatus('scanning')
-      rafRef.current = requestAnimationFrame(tick)
+      scheduleNextFrame()
     } catch (err) {
       stopCameraStream(streamRef.current)
       streamRef.current = null
@@ -161,7 +232,11 @@ export function QrCamera() {
         </div>
       )}
 
-      <div className="camera-stage" hidden={!showPreview}>
+      {/*
+        Keep the stage in the layout while starting/scanning (avoid display:none
+        on the video, which can stall frame delivery in some browsers).
+      */}
+      <div className={showPreview ? 'camera-stage' : 'camera-stage camera-stage--idle'}>
         <video
           ref={videoRef}
           className="camera-video"
@@ -170,7 +245,6 @@ export function QrCamera() {
           autoPlay
           aria-label="Live camera preview for QR scanning"
         />
-        <canvas ref={canvasRef} className="camera-canvas" aria-hidden="true" />
         {status === 'scanning' && (
           <p className="camera-hint" role="status">
             Looking for a QR code…
